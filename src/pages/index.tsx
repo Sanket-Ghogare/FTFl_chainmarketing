@@ -1,115 +1,325 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { useState } from 'react';
+import Head from 'next/head';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export default function Home() {
-  return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+interface User {
+  id: number;
+  name: string;
+  level: number;
+  percentage: number;
+  amount: number;
+  joinedDate: string;
 }
+
+const NetworkMarketingApp = () => {
+  const [totalAmount, setTotalAmount] = useState<number>(1000);
+  const [newUserName, setNewUserName] = useState<string>('');
+  const [showAddUser, setShowAddUser] = useState<boolean>(false);
+  
+  const [users, setUsers] = useState<User[]>([
+    {
+      id: 1,
+      name: "John (Founder)",
+      level: 1,
+      percentage: 50,
+      amount: 0,
+      joinedDate: "2024-01-01"
+    },
+    {
+      id: 2,
+      name: "Sarah (Level 2)",
+      level: 2,
+      percentage: 30,
+      amount: 0,
+      joinedDate: "2024-02-15"
+    },
+    {
+      id: 3,
+      name: "Mike (Level 3)",
+      level: 3,
+      percentage: 20,
+      amount: 0,
+      joinedDate: "2024-03-20"
+    }
+  ]);
+
+  const calculatePercentages = (userCount: number) => {
+    const percentages = [];
+    let remainingPercentage = 100;
+    
+    for (let i = 0; i < userCount; i++) {
+      if (i === 0) {
+        percentages.push(50);
+        remainingPercentage -= 50;
+      } else if (i === userCount - 1) {
+        percentages.push(remainingPercentage);
+      } else {
+        const currentPercentage = Math.floor(remainingPercentage * 0.6);
+        percentages.push(currentPercentage);
+        remainingPercentage -= currentPercentage;
+      }
+    }
+    
+    return percentages;
+  };
+
+  
+  const updateUserPercentages = (userList: User[]) => {
+    const percentages = calculatePercentages(userList.length);
+    return userList.map((user, index) => ({
+      ...user,
+      percentage: percentages[index] || 0
+    }));
+  };
+
+  
+  const calculateDistribution = () => {
+    const updatedUsers = updateUserPercentages(users);
+    return updatedUsers.map(user => ({
+      ...user,
+      amount: (totalAmount * user.percentage) / 100
+    }));
+  };
+
+  const distributedUsers = calculateDistribution();
+
+  const handleDistribute = () => {
+   
+    alert('Amount distributed successfully!');
+  };
+
+  const handleAddUser = () => {
+    if (newUserName.trim()) {
+      const newUser: User = {
+        id: users.length + 1,
+        name: `${newUserName} (Level ${users.length + 1})`,
+        level: users.length + 1,
+        percentage: 0, 
+        amount: 0,
+        joinedDate: new Date().toISOString().split('T')[0]
+      };
+      
+      setUsers([...users, newUser]);
+      setNewUserName('');
+      setShowAddUser(false);
+    }
+  };
+
+  const handleRemoveUser = (userId: number) => {
+    if (users.length > 1) { 
+      const updatedUsers = users
+        .filter(user => user.id !== userId)
+        .map((user, index) => ({
+          ...user,
+          level: index + 1,
+          name: user.name.includes('(Founder)') ? user.name : 
+                user.name.split(' (Level')[0] + ` (Level ${index + 1})`
+        }));
+      setUsers(updatedUsers);
+    }
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Network Marketing Distribution</title>
+      </Head>
+      
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              Network Marketing Distribution
+            </h1>
+            <p className="text-gray-600">
+              Simple chain-based amount distribution system
+            </p>
+          </div>
+
+          
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="text-lg font-semibold text-gray-700">
+                Total Amount to Distribute:
+              </label>
+              <div className="flex items-center space-x-2">
+                <span className="text-xl font-bold text-green-600">$</span>
+                <input
+                  type="number"
+                  value={totalAmount}
+                  onChange={(e) => setTotalAmount(Number(e.target.value))}
+                  className="w-32 px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+                />
+              </div>
+            </div>
+            
+            <div className="flex space-x-4">
+              <button
+                onClick={handleDistribute}
+                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              >
+                Distribute Amount
+              </button>
+              
+              <button
+                onClick={() => setShowAddUser(!showAddUser)}
+                className="bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-semibold"
+              >
+                Add User
+              </button>
+            </div>
+
+          
+            {showAddUser && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={newUserName}
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    placeholder="Enter user name"
+                    className="flex-1 text-black px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                  <button
+                    onClick={handleAddUser}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddUser(false);
+                      setNewUserName('');
+                    }}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+        
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Distribution Chain
+            </h2>
+            
+            {distributedUsers.map((user, index) => (
+              <div
+                key={user.id}
+                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-bold text-lg">
+                        {user.level}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {user.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Joined: {user.joinedDate}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-green-600">
+                        ${user.amount.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {user.percentage}% of total
+                      </div>
+                    </div>
+                    
+                    {users.length > 1 && (
+                      <button
+                        onClick={() => handleRemoveUser(user.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
+                
+                
+                <div className="mt-4">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${user.percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+    
+          <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Distribution Summary
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">
+                  ${totalAmount.toFixed(2)}
+                </div>
+                <div className="text-sm text-gray-600">Total Amount</div>
+              </div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">
+                  {distributedUsers.length}
+                </div>
+                <div className="text-sm text-gray-600">Active Users</div>
+              </div>
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">
+                  ${distributedUsers.reduce((sum, user) => sum + user.amount, 0).toFixed(2)}
+                </div>
+                <div className="text-sm text-gray-600">Total Distributed</div>
+              </div>
+            </div>
+          </div>
+
+       
+          <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Network Hierarchy
+            </h3>
+            <div className="flex justify-center items-center space-x-8">
+              {distributedUsers.map((user, index) => (
+                <div key={user.id} className="text-center">
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold ${
+                    index === 0 ? 'bg-yellow-500' : 
+                    index === 1 ? 'bg-gray-400' : 'bg-orange-400'
+                  }`}>
+                    {user.level}
+                  </div>
+                  <div className="mt-2 text-sm font-medium">{user.name.split(' ')[0]}</div>
+                  <div className="text-xs text-gray-500">{user.percentage}%</div>
+                  {index < distributedUsers.length - 1 && (
+                    <div className="absolute transform translate-x-12 translate-y-8">
+                      <div className="w-8 h-0.5 bg-gray-300"></div>
+                      <div className="w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-gray-300 ml-6"></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default NetworkMarketingApp;
+
